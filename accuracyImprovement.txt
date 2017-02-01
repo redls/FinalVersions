@@ -1,0 +1,171 @@
+Iteration: 0
+Correct predicted while training: 5378 out of: 8534
+
+Correct predicted while classifying: 1111 out of: 2210
+
+Iteration: 1
+Correct predicted while training: 5788 out of: 8534
+
+Correct predicted while classifying: 1114 out of: 2210
+
+Iteration: 2
+Correct predicted while training: 5858 out of: 8534
+
+Correct predicted while classifying: 1268 out of: 2210
+
+Iteration: 3
+Correct predicted while training: 6047 out of: 8534
+
+Correct predicted while classifying: 1430 out of: 2210
+
+Iteration: 4
+Correct predicted while training: 6268 out of: 8534
+
+Correct predicted while classifying: 1506 out of: 2210
+
+Iteration: 5
+Correct predicted while training: 6455 out of: 8534
+
+Correct predicted while classifying: 1537 out of: 2210
+
+Iteration: 6
+Correct predicted while training: 6595 out of: 8534
+
+Correct predicted while classifying: 1555 out of: 2210
+
+Iteration: 7
+Correct predicted while training: 6695 out of: 8534
+
+Correct predicted while classifying: 1571 out of: 2210
+
+Iteration: 8
+Correct predicted while training: 6824 out of: 8534
+
+Correct predicted while classifying: 1576 out of: 2210
+
+Iteration: 9
+Correct predicted while training: 6896 out of: 8534
+
+Correct predicted while classifying: 1579 out of: 2210
+
+Iteration: 10
+Correct predicted while training: 6989 out of: 8534
+
+Correct predicted while classifying: 1579 out of: 2210
+
+Iteration: 11
+Correct predicted while training: 7077 out of: 8534
+
+Correct predicted while classifying: 1587 out of: 2210
+
+Iteration: 12
+Correct predicted while training: 7142 out of: 8534
+
+Correct predicted while classifying: 1583 out of: 2210
+
+Iteration: 13
+Correct predicted while training: 7192 out of: 8534
+
+Correct predicted while classifying: 1585 out of: 2210
+
+Iteration: 14
+Correct predicted while training: 7236 out of: 8534
+
+Correct predicted while classifying: 1584 out of: 2210
+
+Iteration: 15
+Correct predicted while training: 7280 out of: 8534
+
+Correct predicted while classifying: 1578 out of: 2210
+
+Iteration: 16
+Correct predicted while training: 7328 out of: 8534
+
+Correct predicted while classifying: 1568 out of: 2210
+
+Iteration: 17
+Correct predicted while training: 7375 out of: 8534
+
+Correct predicted while classifying: 1563 out of: 2210
+
+Iteration: 18
+Correct predicted while training: 7400 out of: 8534
+
+Correct predicted while classifying: 1565 out of: 2210
+
+Iteration: 19
+Correct predicted while training: 7446 out of: 8534
+
+Correct predicted while classifying: 1566 out of: 2210
+
+Iteration: 20
+Correct predicted while training: 7470 out of: 8534
+
+Correct predicted while classifying: 1578 out of: 2210
+
+Iteration: 21
+Correct predicted while training: 7498 out of: 8534
+
+Correct predicted while classifying: 1568 out of: 2210
+
+Iteration: 22
+Correct predicted while training: 7505 out of: 8534
+
+Correct predicted while classifying: 1581 out of: 2210
+
+Iteration: 23
+Correct predicted while training: 7519 out of: 8534
+
+Correct predicted while classifying: 1574 out of: 2210
+
+Iteration: 24
+Correct predicted while training: 7535 out of: 8534
+
+Correct predicted while classifying: 1564 out of: 2210
+
+Iteration: 25
+Correct predicted while training: 7549 out of: 8534
+
+Correct predicted while classifying: 1579 out of: 2210
+
+Iteration: 26
+Correct predicted while training: 7587 out of: 8534
+
+Correct predicted while classifying: 1552 out of: 2210
+
+Iteration: 27
+Correct predicted while training: 7586 out of: 8534
+
+Correct predicted while classifying: 1602 out of: 2210
+
+Iteration: 28
+Correct predicted while training: 7617 out of: 8534
+
+Correct predicted while classifying: 1549 out of: 2210
+
+Iteration: 29
+Correct predicted while training: 7601 out of: 8534
+
+Correct predicted while classifying: 1598 out of: 2210
+
+Iteration: 30
+Correct predicted while training: 7598 out of: 8534
+
+Correct predicted while classifying: 1563 out of: 2210
+
+Iteration: 31
+Correct predicted while training: 7676 out of: 8534
+
+Correct predicted while classifying: 1595 out of: 2210
+
+Iteration: 32
+Correct predicted while training: 7705 out of: 8534
+
+Correct predicted while classifying: 1558 out of: 2210
+
+Iteration: 33
+Correct predicted while training: 7443 out of: 8534
+
+Correct predicted while classifying: 1615 out of: 2210
+
+Iteration: 34

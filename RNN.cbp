@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="RNN" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/RNN" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/RNN" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="DatasetSentenceTrees.h" />
+		<Unit filename="DatasetSentences.cpp" />
+		<Unit filename="DatasetSentences.h" />
+		<Unit filename="DatasetSentencesTrees.cpp" />
+		<Unit filename="Dictionary.cpp" />
+		<Unit filename="Dictionary.h" />
+		<Unit filename="MatrixOperations.cpp" />
+		<Unit filename="MatrixOperations.h" />
+		<Unit filename="Node.cpp" />
+		<Unit filename="Node.h" />
+		<Unit filename="ParseASentence.cpp" />
+		<Unit filename="ParseASentence.h" />
+		<Unit filename="Preprocessing.cpp" />
+		<Unit filename="Preprocessing.h" />
+		<Unit filename="RNNParam.cpp" />
+		<Unit filename="RNNParam.h" />
+		<Unit filename="SentenceTree.cpp" />
+		<Unit filename="SentenceTree.h" />
+		<Unit filename="SentimentLabels.cpp" />
+		<Unit filename="SentimentLabels.h" />
+		<Unit filename="TestsetSentences.cpp" />
+		<Unit filename="TestsetSentences.h" />
+		<Unit filename="Tree.cpp" />
+		<Unit filename="Tree.h" />
+		<Unit filename="Vocabulary.cpp" />
+		<Unit filename="Vocabulary.h" />
+		<Unit filename="main.cpp" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

@@ -1,0 +1,176 @@
+# depslib dependency file v1.0
+1485880536 source:/home/laura/Part II Project/partIIProject/RNN/main.cpp
+	<iostream>
+	<fstream>
+	<utility>
+	<iomanip>
+	"DatasetSentences.h"
+	"DatasetSentenceTrees.h"
+	"TestsetSentences.h"
+	"MatrixOperations.h"
+	"SentenceTree.h"
+	"Preprocessing.h"
+
+1485781198 source:/home/laura/Part II Project/partIIProject/RNN/Node.cpp
+	"Node.h"
+	<cstdio>
+	<vector>
+
+1485781198 /home/laura/Part II Project/partIIProject/RNN/Node.h
+	<cstdio>
+	<vector>
+
+1485781198 source:/home/laura/Part II Project/partIIProject/RNN/Tree.cpp
+	"Tree.h"
+	<cstdio>
+	<vector>
+	<iostream>
+
+1485781198 /home/laura/Part II Project/partIIProject/RNN/Tree.h
+	"Node.h"
+	<cstdio>
+	<vector>
+	<string>
+
+1485781198 /home/laura/Part II Project/partIIProject/RNN/Vocabulary.h
+	<cstdio>
+	<unordered_map>
+	<vector>
+
+1485781198 source:/home/laura/Part II Project/partIIProject/RNN/Vocabulary.cpp
+	<cstdio>
+	<random>
+	<fstream>
+	<iostream>
+	<stdlib.h>
+	<string>
+	"ParseASentence.h"
+	"MatrixOperations.h"
+
+1484440779 source:/home/laura/Part II Project/partIIProject/RNN/DatasetSentences.cpp
+	"DatasetSentences.h"
+	<iostream>
+	<fstream>
+	<cstdio>
+	<string.h>
+
+1481982082 /home/laura/Part II Project/partIIProject/RNN/DatasetSentences.h
+	<cstdio>
+	<vector>
+	<unordered_map>
+
+1485781198 source:/home/laura/Part II Project/partIIProject/RNN/ParseASentence.cpp
+	<cstdio>
+	<iostream>
+	<random>
+	"ParseASentence.h"
+	"MatrixOperations.h"
+
+1483534958 /home/laura/Part II Project/partIIProject/RNN/ParseASentence.h
+	<cstdio>
+	<vector>
+	<string>
+	"Tree.h"
+	"Vocabulary.h"
+
+1484181286 source:/home/laura/Part II Project/partIIProject/RNN/DatasetSentencesTrees.cpp
+	<cstdio>
+	<vector>
+	<unordered_map>
+	<iostream>
+	<fstream>
+	<string.h>
+	"DatasetSentenceTrees.h"
+
+1485781198 /home/laura/Part II Project/partIIProject/RNN/MatrixOperations.h
+	<cstdio>
+	<iostream>
+	<fstream>
+	<vector>
+	<math.h>
+
+1485883576 source:/home/laura/Part II Project/partIIProject/RNN/MatrixOperations.cpp
+	<cstdio>
+	<iostream>
+	<iomanip>
+	"MatrixOperations.h"
+
+1485828078 source:/home/laura/Part II Project/partIIProject/RNN/SentenceTree.cpp
+	"SentenceTree.h"
+	"MatrixOperations.h"
+	<string>
+	<cstdio>
+	<iostream>
+	<fstream>
+
+1485781198 /home/laura/Part II Project/partIIProject/RNN/SentenceTree.h
+	"ParseASentence.h"
+	"Dictionary.h"
+	"SentimentLabels.h"
+	"RNNParam.h"
+	<string>
+	<unordered_map>
+
+1483809581 source:/home/laura/Part II Project/partIIProject/RNN/SentimentLabels.cpp
+	"SentimentLabels.h"
+	<iostream>
+	<fstream>
+	<cstdio>
+	<string.h>
+
+1483786393 /home/laura/Part II Project/partIIProject/RNN/SentimentLabels.h
+	<unordered_map>
+	<cstdio>
+
+1483792148 source:/home/laura/Part II Project/partIIProject/RNN/Dictionary.cpp
+	"Dictionary.h"
+	<iostream>
+	<fstream>
+	<cstdio>
+	<string.h>
+
+1483786513 /home/laura/Part II Project/partIIProject/RNN/Dictionary.h
+	<unordered_map>
+	<cstdio>
+
+1484440826 source:/home/laura/Part II Project/partIIProject/RNN/TestsetSentences.cpp
+	"TestsetSentences.h"
+	<iostream>
+	<fstream>
+	<cstdio>
+	<string.h>
+
+1481932198 /home/laura/Part II Project/partIIProject/RNN/TestsetSentences.h
+	<unordered_map>
+	<cstdio>
+
+1484178569 /home/laura/Part II Project/partIIProject/RNN/DatasetSentenceTrees.h
+	<cstdio>
+	<vector>
+	<unordered_map>
+	<string.h>
+
+1484350511 /home/laura/Part II Project/partIIProject/RNN/Preprocessing.h
+	<cstdio>
+
+1484351850 source:/home/laura/Part II Project/partIIProject/RNN/Preprocessing.cpp
+	<cstdio>
+	<iostream>
+	<fstream>
+	<string.h>
+	"Preprocessing.h"
+
+1485781198 /home/laura/Part II Project/partIIProject/RNN/RNNParam.h
+	<cstdio>
+	<string>
+	<vector>
+	<unordered_map>
+
+1485781198 source:/home/laura/Part II Project/partIIProject/RNN/RNNParam.cpp
+	<cstdio>
+	<string>
+	<unordered_map>
+	<iostream>
+	"RNNParam.h"
+	"MatrixOperations.h"
+
