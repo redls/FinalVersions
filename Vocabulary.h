@@ -14,10 +14,12 @@ class Vocabulary {
 
     public:
         Vocabulary();
+        ~Vocabulary();
         vector<double> getWordRepresentation(string word);
         bool containsWord(string word);
         void addNewWord(string word);
-        //void updateWordRepresentation(string word, vector<double> newRep);
+        void updateWordRepresentation(string word, vector<double> newRep);
         void updateWordRepresentation(string word, vector<double> newRep, double learningRate);
         void updateWordRepresentation(string word, vector<double> newRep, double learningRate, double regresionParam);
+        vector<vector<double>> getMatrixFromVocabulary();
 };

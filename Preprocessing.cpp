@@ -1,6 +1,7 @@
 #include<cstdio>
 #include<iostream>
 #include<fstream>
+#include <ctype.h>
 #include<string.h>
 #include "Preprocessing.h"
 using namespace std;
@@ -22,7 +23,8 @@ void preprocessSentences() {
                 outputResult<<word<<" ";
                 word = "";
             } else {
-                word += c;
+                    char aux = tolower(c);
+                    word +=aux;
             }
         }
         outputResult<<word;

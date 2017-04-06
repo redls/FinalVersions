@@ -2,8 +2,12 @@
 #include <iostream>
 #include <fstream>
 #include <cstdio>
+#include<ctype.h>
 #include <string.h>
 using namespace std;
+
+Dictionary::~Dictionary() {}
+
 
 Dictionary::Dictionary() {
     ifstream input("stanfordSentimentTreebank/dictionary.txt");
@@ -19,7 +23,10 @@ Dictionary::Dictionary() {
                 is_number = true;
                 number = 0;
             } else {
-                if (!is_number) word +=c;
+                if (!is_number) {
+                    char aux = tolower(c);
+                    word +=aux;
+                    }
                 else number = number*10 + c -'0';
             }
          }

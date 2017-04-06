@@ -41,6 +41,7 @@ void Tree::setRoot(Node x) {
 void Tree::setRoot(vector<double> x) {
     Node* n = new Node(x);
     this->node = *n;
+    delete(n);
 }
 
 void Tree::setScore(vector<double> s) {
@@ -71,13 +72,13 @@ string Tree::getWord() {
 void printTree(Tree* t) {
     if (t == nullptr) return;
     cout<<"(";
-    printTree(t->getLeftTree());
-    vector<double> nodeRep = t->getRootRepresentation();
     cout<<"Root ";
+    vector<double> nodeRep = t->getRootRepresentation();
     for (int i = 0; i < nodeRep.size();i++) {
         cout<<nodeRep[i]<<" ";
     }
-    cout<<endl;
+    if (t->getLeftTree() == nullptr) cout<<t->getWord()<<" ";
+    printTree(t->getLeftTree());
     printTree(t->getRightTree());
      cout<<")";
 }
@@ -85,7 +86,6 @@ void printTree(Tree* t) {
 
 // Print the elements of the tree in-order.
 void Tree::inOrderTraversal() {
-    Tree* t = this;
-    printTree(t);
+    printTree(this);
     cout<<endl;
 }

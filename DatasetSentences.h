@@ -19,10 +19,14 @@ class DatasetSentences {
 
     // Constructor.
     DatasetSentences();
+    ~DatasetSentences();
 
     // Given a sentence retrieve the sentence index.
     long long retrieveSentenceIndex(string phrase);
 
     // Retrieve map.
     unordered_map<string, long long> getSentencesMap();
+
+    // Transform the map to a vector of pairs.
+    vector<pair<string, long long>> getVectorOfSentences();
 };

@@ -13,6 +13,7 @@ class SentimentLabels {
 
     public:
     SentimentLabels();
+    ~SentimentLabels();
     double getSentimentScore(long long phraseIndex);
 
 };

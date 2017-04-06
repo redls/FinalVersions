@@ -101,3 +101,14 @@ double findMaxNumberInVector(vector<double> vec);
 
 // Find the minimum number in a vector.
 double findMinNumberInVector(vector<double> vec);
+
+// Return norm of a matrix.
+double getNormOfMatrix(vector<vector<double>> matrix);
+
+double getNormOfVector(vector<double> vec);
+
+// Matrix multiplication.
+double getNormOfMatrix(vector<vector<double>> m1);
+
+// Multiply vector by scalar.
+vector<double> multiplyVectorByScalar(vector<double> vec, double scalar);

@@ -1,20 +1,18 @@
-#include "DatasetSentences.h"
+#include "ValidationsetSentences.h"
 #include <iostream>
 #include<fstream>
+#include<ctype.h>
 #include<cstdio>
-#include <ctype.h>
 #include<string.h>
 using namespace std;
 
 /**
- * Map which keeps the reads from the "DatasetSentences.txt" stores only the sentences used for training
+ * Map which keeps the reads from the "DatasetSentences.txt" stores only the sentences used for dev
  * and their index.  One can find which senteces are used for testing by looking in datasetSplit.txt and
- * retrieve the sentences annotated with 1.
+ * retrieve the sentences annotated with 3.
  */
 
-DatasetSentences::~DatasetSentences() {}
-
-DatasetSentences::DatasetSentences() {
+ValidationsetSentences::ValidationsetSentences() {
     // Read from the file.
     //ifstream input("stanfordSentimentTreebank/datasetSentences.txt");
     ifstream input("Preprocessing.txt");
@@ -37,32 +35,32 @@ DatasetSentences::DatasetSentences() {
             if (c == '\t') {
                 is_number = false;
             } else {
-                if (!is_number){
+                if (!is_number)  {
                     char aux = tolower(c);
                     word +=aux;
-                }
+                    }
                 else number = number*10 + c -'0';
             }
          }
          is_number = true;
-         long long number2= 0, number1 = 0;
+         long long number1 = 0, number2 = 0;
          for(char & c : line_dataset) {
             if (c == ',') {
                 is_number = false;
 
             } else {
-                if (!is_number) number2 = number2*10 + c -'0';
-                else number1 = number1*10 + c -'0';
+                if (!is_number) number1 = number1*10 + c -'0';
+                else number2 = number2*10 + c -'0';
             }
          }
-         if (number == number1 && number2 == 1) {
+         if (number == number2 && number1 == 3) {
          sentences.insert(make_pair(word, number));
          outputFile<<word<<" "<<number<<endl;
          }
     }
 }
 
-long long DatasetSentences::retrieveSentenceIndex(string phrase) {
+/*  long long DevsetSentences::retrieveSentenceIndex(string phrase) {
     unordered_map<string, long long>::const_iterator found_iter = sentences.find(phrase);
     if (found_iter == sentences.end()) {
         ofstream outputFile;
@@ -71,18 +69,12 @@ long long DatasetSentences::retrieveSentenceIndex(string phrase) {
         return -1;
         }
     return found_iter->second;
-}
+} */
 
-unordered_map<string, long long> DatasetSentences::getSentencesMap() {
+unordered_map<string, long long> ValidationsetSentences::getSentencesMap() {
     return sentences;
 }
 
+ValidationsetSentences::~ValidationsetSentences(){}
 
-// Transform the map to a vector of pairs.
-vector<pair<string, long long>> DatasetSentences::getVectorOfSentences() {
-     vector<pair<string, long long>> result;
-     for (auto it = sentences.begin(); it != sentences.end(); it++) {
-        result.push_back(make_pair(it->first, it->second));
-     }
-     return result;
-}
+

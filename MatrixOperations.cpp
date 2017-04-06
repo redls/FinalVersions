@@ -1,11 +1,13 @@
 #include<cstdio>
 #include<iostream>
 #include<iomanip>
+#include <math.h>
 #include "MatrixOperations.h"
 
 using namespace std;
 
 #define EPSILON 0.000000000001
+#define WORD_SIZE_VEC 30
 
 // Find the maximum number in a vector.
 double findMaxNumberInVector(vector<double> vec) {
@@ -90,7 +92,8 @@ vector<double> applyTanhElementWise(vector<double> vec) {
         cout<<" Found nan"<<endl;
         exit(0);
      }
-        result.push_back(tanh(vec[i]));
+     //cout<<tanh(vec[i])<<endl;
+        result.push_back(tanh((double)vec[i]));
     }
     return result;
 }
@@ -98,6 +101,10 @@ vector<double> applyTanhElementWise(vector<double> vec) {
 // Perform inner product of the 2 vectors and return the result back.
 double vectorInnerProduct(vector<double> vec1, vector<double> vec2) {
     double result;
+    if (vec1.size() != vec2.size()) {
+        cout<<"The given vectors have different dimensions and could not perform inner product on them."<<endl;
+        exit(0);
+    }
     for (int i = 0; i < vec1.size(); i++) {
         result = result + vec1[i]*vec2[i];
     }
@@ -133,10 +140,11 @@ bool checkIfTwoMatricesHaveTheSameDimesions(vector<vector<double>> matrix1, vect
     int l2 = matrix2.size();
     if (l1 != l2) return false;
     if (l1 > 0) {
-        int c1 = matrix1.size();
-        int c2 = matrix2.size();
-        if (c1 != c2) return false;
-        else return true;
+        for(int i = 0; i < l1; i++) {
+            int c1 = matrix1[i].size();
+            int c2 = matrix2[i].size();
+            if (c1 != c2) return false;
+        }
     }
     return true;
 }
@@ -196,32 +204,21 @@ vector<double> softmax(vector<double> vec) {
 
     long long prod = 1;
     long long aux = 0;
-    //long long counterFirst = findPower(vec[0]);
-    //long long counterSecond = findPower(vec[1]);
-    //aux = (counterFirst + counterSecond)/2;
-  /*  while (aux > 0) {
-        prod *= 10;
-        aux -= 1;
-    }*/
-    //printElementsOfVector(vec);
+//cout<<vec[0]<<" "<<vec[1]<<endl;
     for (int i = 0; i < vec.size(); i++) {
         vec[i] = vec[i] - maximum;
-       // vec[i] = vec[i] + 0.000000099999;
         sum = sum + exp(vec[i]);
     }
-    //cout<<sum<<endl;
-   // sum = log(sum);
-    //printElementsOfVector(vec);
-    if (sum == 0) {
+
+    if (sum - EPSILON == 0) {
         cout<<"The sum computed for softmax is zero."<<endl;
         exit(0);
     }
-    //cout<<"**&&**"<<setprecision(10)<<sum<<" ";
-    //printElementsOfVector(vec);
+
     vector<double> result;
     for (int i = 0; i < vec.size(); i++) {
         temp = exp(vec[i]) / sum;
-        //temp = vec[i]  - maximum - sum;
+        //cout<<temp<<endl;
         result.push_back(temp);
     }
     return result;
@@ -443,5 +440,37 @@ vector<vector<double>> getEmptySentimentWeightMatrix() {
     }
     result.push_back(temp);
     result.push_back(temp);
+    return result;
+}
+
+// Matrix multiplication.
+double getNormOfMatrix(vector<vector<double>> m1) {
+    double result;
+    double s = 0;
+    for (int i = 0; i < m1.size(); i++)
+        for (int j = 0; j < m1[0].size(); j++) {
+            s = s + m1[i][j] * m1[i][j];
+        }
+    result = sqrt(s);
+    return result;
+}
+
+// Multiply vector by scalar.
+vector<double> multiplyVectorByScalar(vector<double> vec, double scalar) {
+    vector<double> result;
+    for(int i = 0; i < vec.size(); i++) {
+        result.push_back(vec[i] * scalar);
+        }
+    return result;
+}
+
+
+double getNormOfVector(vector<double> vec) {
+    double result;
+    double s = 0;
+    for (int i = 0; i < vec.size(); i++) {
+            s = s + vec[i] * vec[i];
+        }
+    result = sqrt(s);
     return result;
 }

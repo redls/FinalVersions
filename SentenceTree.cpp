@@ -5,26 +5,28 @@
 #include<iostream>
 #include<fstream>
 using namespace std;
+#define WORD_SIZE_VEC 30
 
 /**
  * Contains methods which interact with a given sentence's tree.
  */
 
 
- double distanceBetweenTwoVectors(vector<double> vec1, vector<double> vec2, vector<vector<double>> sentimentWeightMatrix, vector<double> product) {
+ double distanceBetweenTwoVectors(vector<double> vec1, vector<double> vec2, vector<vector<double>> sentimentWeightMatrix, vector<double> product, vector<double> biasSentimentMatrix) {
     double score = 0;
    /* for(int i = 0; i < vec1.size(); i++) {
         score = score + (vec1[i] - vec2[i])*(vec1[i] - vec2[i]);
     } */
     vector<double> afterTanh = applyTanhElementWise(product);
-    vector<double> softmaxResult = softmax(matrixMultplicationWithVector(sentimentWeightMatrix, afterTanh));
+    vector<double> softmaxResult = softmax(addTwoVectors(biasSentimentMatrix, matrixMultplicationWithVector(sentimentWeightMatrix, afterTanh)));
     if (softmaxResult[0] - softmaxResult[1] > 0) return softmaxResult[0] - softmaxResult[1];
     else softmaxResult[1] - softmaxResult[0];
     return score;
  }
 
 // Given a sentence, construct its semantic tree by combining the words using the tanh rule.
-Tree* constructTreeForASentence(string sentence, vector<vector<double>> weights, vector<vector<double>> sentimentWeightScore, Vocabulary *vocab) {
+Tree* constructTreeForASentence(string sentence, vector<vector<double>> weights, vector<vector<double>> sentimentWeightScore,
+        Vocabulary *vocab, vector<double> biasSentimentMatrix, vector<double> biasWeights) {
     vector<string> words = getWordsFromSentence(sentence);
     vector<Node> nodes = retrieveWordRepresentation(words, vocab);
     vector<pair<int,int>> pairedElem;
@@ -49,8 +51,9 @@ Tree* constructTreeForASentence(string sentence, vector<vector<double>> weights,
         vector<double> concatenation = concatenateTwoVectors(trees[0]->getRootRepresentation(),
                     trees[1]->getRootRepresentation());
         vector<double> product = matrixMultplicationWithVector(weights, concatenation);
+        product = addTwoVectors(product, biasWeights);
         vector<double> afterTanh = applyTanhElementWise(product);
-        maxScore = distanceBetweenTwoVectors(trees[0]->getRootRepresentation(), trees[1]->getRootRepresentation(), sentimentWeightScore, product);
+        maxScore = distanceBetweenTwoVectors(trees[0]->getRootRepresentation(), trees[1]->getRootRepresentation(), sentimentWeightScore, product, biasSentimentMatrix);
         int left = 0;
         int right = 1;
         for(int i = 1; i < trees.size(); i++) {
@@ -62,12 +65,13 @@ Tree* constructTreeForASentence(string sentence, vector<vector<double>> weights,
                 cout<<sentence<<endl;
                 exit(0);
             }
+            product = addTwoVectors(product, biasWeights);
             afterTanh = applyTanhElementWise(product);
            //. score = distanceBetweenTwoVectors(trees[i-1]->getRootRepresentation(),
                  //   trees[i]->getRootRepresentation());
 
             score = distanceBetweenTwoVectors(trees[i-1]->getRootRepresentation(),
-                   trees[i]->getRootRepresentation(), sentimentWeightScore, product);
+                   trees[i]->getRootRepresentation(), sentimentWeightScore, product, biasSentimentMatrix);
             // Check if the new node would hove a higer score. IF it has, change the variables
             // left and right to point to the positions of the two nodes.
             if (score > maxScore) {
@@ -80,6 +84,7 @@ Tree* constructTreeForASentence(string sentence, vector<vector<double>> weights,
         concatenation = concatenateTwoVectors(trees[left]->getRootRepresentation(),
                     trees[right]->getRootRepresentation());
         product = matrixMultplicationWithVector(weights, concatenation);
+        product = addTwoVectors(product, biasWeights);
         afterTanh = applyTanhElementWise(product);
         for(int i = 0;i < afterTanh.size(); i++) {
             if (isnan(afterTanh[i])) {
@@ -92,7 +97,7 @@ Tree* constructTreeForASentence(string sentence, vector<vector<double>> weights,
         // Create new node which has as children the 2 nodes, and as the root the computed
         // score.
         Tree *merged = new Tree(afterTanh);
-        merged->setScore(softmax(matrixMultplicationWithVector(sentimentWeightScore, afterTanh)));
+        merged->setScore(addTwoVectors(softmax(matrixMultplicationWithVector(sentimentWeightScore, afterTanh)), biasSentimentMatrix));
 
         merged->setLeftTree(trees[left]);
         merged->setRightTree(trees[right]);
@@ -108,11 +113,8 @@ Tree* constructTreeForASentence(string sentence, vector<vector<double>> weights,
         pairedElem.push_back(make_pair(left,right));
         numberOfWords--;
     }
-    // Tells us what is the score of the root of the complete tree of  the sentence.
-    vector<double> score = matrixMultplicationWithVector(sentimentWeightScore, trees[0]->getRootRepresentation());
-    //for (int i = 0; i < 2; i++) {
-        //cout<<"negative: "<<score[0]<<"\n positive"<<score[1]<< endl;
-    //}
+
+//    delete(t);
     return trees[0];
 }
 
@@ -164,7 +166,7 @@ string assignRightLabels(Tree* t, vector<string> words, Dictionary* dictionary, 
     if (t->getLeftTree() == nullptr && t->getRightTree() == nullptr) {
         long long phraseIndex = dictionary->getPhraseIndex(words[numberOfLeaves]);
         double score = sentimentLabels->getSentimentScore(phraseIndex);
-        if (phraseIndex == -1) cout<<words[numberOfLeaves]<<" not found in the dictionary."<<endl;
+        if (phraseIndex == -1) cout<<words[numberOfLeaves]<<" not found in the dictionary while constructing the target tree***"<<endl;
         if (score >= 0.5) {
             // case when the word is positive.
             vector<double> root = t->getRootRepresentation();
@@ -218,6 +220,7 @@ void updateTree(Tree* t, vector<int> branch) {
             Node* node = new Node(createTemporaryNodeRepresentation(value));
             Tree* newTree= new Tree(*node);
             temp->setLeftTree(newTree);
+	    delete(node);
             temp = temp->getLeftTree();
         } else {
             Tree * leftChild = temp->getLeftTree();
@@ -231,6 +234,7 @@ void updateTree(Tree* t, vector<int> branch) {
                     Tree* newTree= new Tree(*node);
                     temp->setRightTree(newTree);
                     temp = temp->getRightTree();
+		    delete(node);
                 } else {
                     vector<double> rightChildRepresentation = rightChild->getRootRepresentation();
                     if (rightChildRepresentation[0] == value) {
@@ -304,41 +308,60 @@ Tree* constructTargetTree(string treeText, string sentence, Dictionary* dictiona
 
 
 
-RNNParam* backprop(Tree * targetTree, Tree * computedTree, vector<vector<double>> weightScoresMatrix, vector<vector<double>> weightsMatrix, vector<double> parentError, Vocabulary* vocab) {
+RNNParam* backprop(Tree * targetTree, Tree * computedTree, vector<vector<double>> weightScoresMatrix, vector<vector<double>> weightsMatrix, vector<double> parentError,
+        vector<double> biasSentiment) {
     // Find the transpose matrixes.
     vector<vector<double>> weightScoresMatrixTranspose = getTransposeMatrix(weightScoresMatrix);
     vector<vector<double>> weightsMatrixTranspose = getTransposeMatrix(weightsMatrix);
 
-    Tree* copyOfTargetTree = targetTree;
     RNNParam* rnnParam = new RNNParam();
     vector<double> targetRootRepresentation;
-     if (targetTree == nullptr) {
-        targetRootRepresentation = getZeros(2);
-        copyOfTargetTree = new Tree(targetRootRepresentation);
-        delete(copyOfTargetTree);
+     if ((targetTree == nullptr && computedTree != nullptr) || (targetTree != nullptr && computedTree == nullptr)) {
+        cout<<"copacei difereti"<<endl;
         return rnnParam;
     } else {
         targetRootRepresentation = targetTree->getRootRepresentation();
         }
 
+    vector<double> zeros25 = getZeros(WORD_SIZE_VEC);
     vector<vector<double>> resultSentimentMatrix;
-    resultSentimentMatrix.push_back(getZeros(25));
-    resultSentimentMatrix.push_back(getZeros(25));
+    resultSentimentMatrix.push_back(zeros25);
+    resultSentimentMatrix.push_back(zeros25);
 
-   // rnnParam->setSentimentWeightsMatrix(resultSentimentMatrix);
-   // rnnParam->setWeightsMatrix(getZerosWeightMatrix(25));
+
+    if ((targetRootRepresentation[0] == 1 && targetRootRepresentation[1] == 1) ||
+        (targetRootRepresentation[0] == 0 && targetRootRepresentation[1] == 0)) {
+            cout<<"Tree is constructed badly i backprop"<<endl;
+            exit(0);
+        }
+
 
     // Retrieve the current node vector.
     vector<double> currentNodeVectorRepresentation = computedTree->getRootRepresentation();
 
     // Compute predictions of the current node.
-    vector<double> softmaxResult = softmax(matrixMultplicationWithVector(weightScoresMatrix, currentNodeVectorRepresentation));
+//    vector<double> softmaxResult = softmax(addTwoVectors(biasSentiment, matrixMultplicationWithVector(weightScoresMatrix, currentNodeVectorRepresentation)));
+    vector<double> softmaxResult = computedTree->getScore();
 
     // Subtract the actual predictions from the softmax.
     vector<double> difference = softmaxResult;
 
-    difference[0] = difference[0] - targetRootRepresentation[0];
-    difference[1] = difference[1] - targetRootRepresentation[1];
+    double totalError = 0;
+
+    if (targetRootRepresentation[0] == 1) {
+        totalError += log((double)difference[0]);
+        difference[0] = difference[0] - 1;
+    }
+    if (targetRootRepresentation[1] == 1) {
+        totalError += log((double)difference[1]);
+        difference[1] = difference[1] - 1;
+    }
+
+
+    vector<double> biasSentimentMatrix = difference;
+    rnnParam->updateBiasSentimentMatrix(biasSentimentMatrix);
+
+    vector<double> biasWeightsMatrix;
 
     // Compute the error for the Sentiment Weight Matrix at this node.
     for(int i = 0; i < difference.size(); i++) {
@@ -346,47 +369,93 @@ RNNParam* backprop(Tree * targetTree, Tree * computedTree, vector<vector<double>
             resultSentimentMatrix[i][j] = (difference[i])*currentNodeVectorRepresentation[j];
         }
     }
-    //vector<double> difference = substractTwoVectors(softmaxResult, targetRootRepresentation);
+    rnnParam->updateSentimentWeightsMatrix(resultSentimentMatrix);
 
     vector<double> deltaScore = matrixMultplicationWithVector(weightScoresMatrixTranspose, difference);
 
+    for(int i = 0;i < deltaScore.size(); i++) {
+            if (isnan((double)deltaScore[i])) {
+                 cout<<"NAN is located when computing first delta score"<<endl;
+                printElementsOfVector(deltaScore);
+                cout<<endl<<endl;
+                printElementsOfVector(difference);
+                cout<<endl<<endl;
+                printElementsOfVector(targetRootRepresentation);
+                cout<<endl<<endl;
+                 printElementsOfMatrix(weightScoresMatrix);
+                cout<<endl<<endl;
+                exit(0);
+            }
+        }
+    // Add parent error.
+    deltaScore = addTwoVectors(deltaScore, parentError);
+
+    // Compute f' (which in this case is tanh').
     vector<double> afterTanhDeriv = getTanhDerivativeFunction(currentNodeVectorRepresentation);
 
-    deltaScore = getVectorHadamardProduct(deltaScore, afterTanhDeriv);
+    for(int i = 0;i < afterTanhDeriv.size(); i++) {
+            if (isnan((double)afterTanhDeriv[i])) {
+                 cout<<"NAN is located when computing tanh deruvatuve"<<endl;
+                printElementsOfVector(afterTanhDeriv);
+                cout<<endl<<endl;
+                printElementsOfVector(currentNodeVectorRepresentation);
+                cout<<endl<<endl;
+                exit(0);
+            }
+        }
 
-    vector<double> deltaTotal = addTwoVectors(deltaScore, parentError);
+
+     // deltaScore = getVectorHadamardProduct(deltaScore, afterTanhDeriv);
+      for(int i = 0;i < deltaScore.size(); i++) {
+         if (currentNodeVectorRepresentation[i] <= 0) deltaScore[i] = 0;
+      }
 
 
-    vector<double> newParentError = matrixMultplicationWithVector(weightsMatrixTranspose, deltaTotal);
+     for(int i = 0;i < deltaScore.size(); i++) {
+            if (isnan((double)deltaScore[i])) {
+                 cout<<"NAN is located when computing delta score"<<endl;
+                printElementsOfVector(deltaScore);
+                cout<<endl<<endl;
+                printElementsOfVector(afterTanhDeriv);
+                cout<<endl<<endl;
+                exit(0);
+            }
+        }
 
-    // Compute error for children.
-    vector<double> leftChild = getZeros(25);
-    vector<double> rightChild = getZeros(25);
+    vector<double> deltaTotal = deltaScore;
 
     // This means the current node is a leaf, return the error only for this node.
     if (computedTree->getLeftTree() == nullptr) {
-        rnnParam->setSentimentWeightsMatrix(resultSentimentMatrix);
-        rnnParam->updateVocabError(computedTree->getWord(), deltaTotal);
+        rnnParam->updateVocabError(computedTree->getWord(), deltaScore);
         return rnnParam;
     }
-    // This means the node is not a leaf. Retrieve the vector representations of the two children.
-    leftChild =  computedTree->getLeftTree()->getRootRepresentation();
-    rightChild =  computedTree->getRightTree()->getRootRepresentation();
+
+
+    biasWeightsMatrix = deltaScore;
+    rnnParam->updateBiasWeightMatrix(biasWeightsMatrix);
+
+    vector<double> newParentError = matrixMultplicationWithVector(weightsMatrixTranspose, deltaScore);
+
+    // Compute error for children. This means the node is not a leaf.
+    // Retrieve the vector representations of the two children.
+    vector<double> leftChild =  computedTree->getLeftTree()->getRootRepresentation();
+    vector<double> rightChild =  computedTree->getRightTree()->getRootRepresentation();
 
     // Concatenate the two children.
     vector<double> mergedChildren = concatenateTwoVectors(leftChild, rightChild);
 
     // Transpose the total error already obtained at this node.
-    vector<vector<double>> deltaTransposed = transposeRowVector(deltaTotal);
+    vector<vector<double>> deltaTransposed = transposeRowVector(deltaScore);
 
     // Compute the total error at this node and obtain the error matrices.
     vector<vector<double>> deltaMatrix = multiplyMatrices(deltaTransposed, mergedChildren);
 
+    rnnParam->updateWeightsMatrix(deltaMatrix);
 
-    // Apply derivate of tanh to the children.
-    mergedChildren = getTanhDerivativeFunction(mergedChildren);
+    for(int i = 0;i < newParentError.size(); i++) {
+         if (mergedChildren[i] <= 0) newParentError[i] = 0;
+      }
 
-    newParentError = getVectorHadamardProduct(newParentError, mergedChildren);
 
     vector<double> leftChildError;
     vector<double> rightChildError;
@@ -395,18 +464,26 @@ RNNParam* backprop(Tree * targetTree, Tree * computedTree, vector<vector<double>
         else rightChildError.push_back(newParentError[i]);
     }
 
-    RNNParam* leftRNNParam = backprop(copyOfTargetTree->getLeftTree(), computedTree->getLeftTree(), weightScoresMatrix, weightsMatrix, leftChildError, vocab);
-    RNNParam* rightRNNParam = backprop(copyOfTargetTree->getRightTree(), computedTree->getRightTree(), weightScoresMatrix, weightsMatrix, rightChildError, vocab);
+    RNNParam* leftRNNParam = backprop(targetTree->getLeftTree(), computedTree->getLeftTree(), weightScoresMatrix, weightsMatrix, leftChildError, biasSentiment);
+    RNNParam* rightRNNParam = backprop(targetTree->getRightTree(), computedTree->getRightTree(), weightScoresMatrix, weightsMatrix, rightChildError, biasSentiment);
 
     rnnParam->updateVocabError(leftRNNParam->getVocabError(), rightRNNParam->getVocabError());
 
-    rnnParam->setWeightsMatrix(deltaMatrix);
+    rnnParam->updateBiasSentimentMatrix(leftRNNParam->getBiasSentimentMatrix());
+    rnnParam->updateBiasSentimentMatrix(rightRNNParam->getBiasSentimentMatrix());
+
+    rnnParam->updateBiasWeightMatrix(leftRNNParam->getBiasWeightMatrix());
+    rnnParam->updateBiasWeightMatrix(rightRNNParam->getBiasWeightMatrix());
+
     rnnParam->updateWeightsMatrix(leftRNNParam->getWeightsMatrix());
     rnnParam->updateWeightsMatrix(rightRNNParam->getWeightsMatrix());
 
-    rnnParam->setSentimentWeightsMatrix(resultSentimentMatrix);
     rnnParam->updateSentimentWeightsMatrix(leftRNNParam->getSentimentWeightsMatrix());
     rnnParam->updateSentimentWeightsMatrix(rightRNNParam->getSentimentWeightsMatrix());
+
+    rnnParam->updateTotalError(totalError);
+    rnnParam->updateTotalError(leftRNNParam->getTotalError());
+    rnnParam->updateTotalError(rightRNNParam->getTotalError());
 
     delete(leftRNNParam);
     delete(rightRNNParam);
@@ -417,8 +494,8 @@ RNNParam* backprop(Tree * targetTree, Tree * computedTree, vector<vector<double>
 
 
 // Assign the labels of to the tree in a post-order way.
-void assignParsingTreeLabels(Tree* t, vector<string> words, Dictionary* dictionary, Vocabulary* vocab, int &numberOfLeaves,
-            vector<vector<double>> weightScoresMatrix, vector<vector<double>> weightsMatrix) {
+void assignParsingTreeLabels(Tree* t, vector<string> words, Vocabulary* vocab, int &numberOfLeaves,
+            vector<vector<double>> weightScoresMatrix, vector<vector<double>> weightsMatrix, vector<double> biasSentimentMatrix, vector<double> biasWeights) {
     if (t == nullptr) {
         cout<<"I am null"<<endl;
         return;
@@ -428,9 +505,9 @@ void assignParsingTreeLabels(Tree* t, vector<string> words, Dictionary* dictiona
         vector<double> leafRepresentation = vocab->getWordRepresentation(words[numberOfLeaves]);
         if (leafRepresentation.empty()) {
             cout<<words[numberOfLeaves]<<" not found in the dictionary."<<endl;
-            vocab->addNewWord(words[numberOfLeaves]);
-            leafRepresentation = vocab->getWordRepresentation(words[numberOfLeaves]);
-            //cout<<"klkdlskdkslkd"<<endl;
+          //  vocab->addNewWord(words[numberOfLeaves]);
+            leafRepresentation = vocab->getWordRepresentation("UNKNOWN");
+//            cout<<"HUUUGE PROBLEM IN VOCABULARY"<<endl;
         }
         for(int i = 0;i < leafRepresentation.size(); i++) {
             if (isnan(leafRepresentation[i])) {
@@ -442,6 +519,7 @@ void assignParsingTreeLabels(Tree* t, vector<string> words, Dictionary* dictiona
         vector<double> root = leafRepresentation;
         t->setRoot(root);
         t->setWord(words[numberOfLeaves]);
+	t->setScore(softmax(addTwoVectors(matrixMultplicationWithVector(weightScoresMatrix, root), biasSentimentMatrix)));
         numberOfLeaves++;
         return;
     }
@@ -455,15 +533,12 @@ void assignParsingTreeLabels(Tree* t, vector<string> words, Dictionary* dictiona
     // The current node is an inner node, compute both left and right trees and then compute the value for the tree;
     if (t->getLeftTree() != nullptr && t->getRightTree() != nullptr) {
 
-    assignParsingTreeLabels(t->getLeftTree(), words, dictionary, vocab, numberOfLeaves, weightScoresMatrix, weightsMatrix);
-    assignParsingTreeLabels(t->getRightTree(), words, dictionary, vocab, numberOfLeaves, weightScoresMatrix, weightsMatrix);
+    assignParsingTreeLabels(t->getLeftTree(), words, vocab, numberOfLeaves, weightScoresMatrix, weightsMatrix, biasSentimentMatrix, biasWeights);
+    assignParsingTreeLabels(t->getRightTree(), words, vocab, numberOfLeaves, weightScoresMatrix, weightsMatrix, biasSentimentMatrix, biasWeights);
 
     vector<double> concatenation = concatenateTwoVectors(t->getLeftTree()->getRootRepresentation(),
                     t->getRightTree()->getRootRepresentation());
-    if (concatenation.size() !=50) {
-        cout<<"The concatenation of the children does not have the right dimension."<<endl;
-        exit(0);
-    }
+
     vector<double> product = matrixMultplicationWithVector(weightsMatrix, concatenation);
 
     for(int i = 0; i < product.size(); i++) {
@@ -480,7 +555,12 @@ void assignParsingTreeLabels(Tree* t, vector<string> words, Dictionary* dictiona
                     exit(0);
                 }
     }
-    vector<double> afterTanh = applyTanhElementWise(product);
+    product = addTwoVectors(product, biasWeights);
+    for(int i = 0; i < product.size(); i++) {
+        if (product[i] <= 0) product[i] = 0;
+    }
+   // vector<double> afterTanh = applyTanhElementWise(product);
+    vector<double> afterTanh = product;
 
    for(int i = 0;i < afterTanh.size(); i++) {
             if (isnan(afterTanh[i])) {
@@ -490,7 +570,8 @@ void assignParsingTreeLabels(Tree* t, vector<string> words, Dictionary* dictiona
             }
         }
     // Set score of the current node.
-    t->setScore(softmax(matrixMultplicationWithVector(weightScoresMatrix, afterTanh)));
+    t->setScore(softmax(addTwoVectors(matrixMultplicationWithVector(weightScoresMatrix, afterTanh), biasSentimentMatrix)));
+
     // Set the new node value.
     t->setRoot(afterTanh);
     }
@@ -498,8 +579,8 @@ void assignParsingTreeLabels(Tree* t, vector<string> words, Dictionary* dictiona
 
 // Read from the PreprocessedDatasetSentences.txt. Map each tree representation with its line position in the file.
 unordered_map<long long, string> readParsedTrees() {
-    ifstream input("PreprocessedDatasetSentences.txt");
-    //ifstream input("stanfordSentimentTreebank/STree.txt");
+   // ifstream input("PreprocessedDatasetSentences.txt");
+    ifstream input("stanfordSentimentTreebank/STree.txt");
     string line;
     unordered_map<long long, string> result;
     long long counter = 0;
@@ -512,14 +593,14 @@ unordered_map<long long, string> readParsedTrees() {
 
 void checkVectorRepresentationHaveSize25(Tree* t) {
     if (t == nullptr) return;
-    if (t->getRootRepresentation().size() != 25) cout<<"!!!!!!!! "<<t->getRootRepresentation().size();
+    if (t->getRootRepresentation().size() != WORD_SIZE_VEC) cout<<"!!!!!!!! "<<t->getRootRepresentation().size();
     checkVectorRepresentationHaveSize25(t->getLeftTree());
     checkVectorRepresentationHaveSize25(t->getRightTree());
 }
 
 // Use the parsing tring in the forward propogation.
-Tree* useParserForCreatingTheTree(string treeText, string sentence, Dictionary* dictionary, Vocabulary* vocab,
-    vector<vector<double>> weightScoresMatrix, vector<vector<double>> weightsMatrix) {
+Tree* useParserForCreatingTheTree(string treeText, string sentence, Vocabulary* vocab,
+    vector<vector<double>> weightScoresMatrix, vector<vector<double>> weightsMatrix, vector<double> biasSentimentMatrix, vector<double> biasWeights) {
     vector<string> words = getWordsFromSentence(sentence);
     // Find the number of nodes in the tree and also retrieve the positions from treeText.
     int numberOfNodes = 0;
@@ -551,12 +632,43 @@ Tree* useParserForCreatingTheTree(string treeText, string sentence, Dictionary* 
     int nr = 0;
 
     // Compute the values of the inner nodes and leaves of the tree.
-    assignParsingTreeLabels(root, words, dictionary, vocab, nr, weightScoresMatrix, weightsMatrix);
+    assignParsingTreeLabels(root, words, vocab, nr, weightScoresMatrix, weightsMatrix, biasSentimentMatrix, biasWeights);
     if (root->getLeftTree() == nullptr) {
         cout<<"The root of the parse tree has left child null => not binary tree."<<endl;
         exit(0);
         }
-    checkVectorRepresentationHaveSize25(root);
+    //checkVectorRepresentationHaveSize25(root);
     return root;
-    } else return constructTreeForASentence(sentence, weightsMatrix, weightScoresMatrix, vocab);
+    } else return constructTreeForASentence(sentence, weightsMatrix, weightScoresMatrix, vocab, biasSentimentMatrix, biasWeights);
+}
+
+
+// Get error for validation.
+double computeErrorForTree(Tree* computedTree, Tree* targetTree, vector<vector<double>> weightScoresMatrix, vector<double> biasWeights) {
+    if (computedTree == nullptr || targetTree == nullptr) return 0;
+    double totalError = 0;
+    double left = computeErrorForTree(computedTree->getLeftTree(), targetTree->getLeftTree(), weightScoresMatrix, biasWeights);
+    double right = computeErrorForTree(computedTree->getRightTree(), targetTree->getRightTree(), weightScoresMatrix, biasWeights);
+
+    // Compute predictions of the current node.
+    vector<double> softmaxResult = softmax(addTwoVectors(biasWeights, matrixMultplicationWithVector(weightScoresMatrix, computedTree->getRootRepresentation())));
+
+
+    if (targetTree->getRootRepresentation()[0] == 1) totalError += log(softmaxResult[0]);
+    if (targetTree->getRootRepresentation()[1] == 1) totalError += log(softmaxResult[1]);
+    totalError = totalError + left + right;
+
+    return totalError;
+}
+
+
+long long getTotalNumberOfInnerNodesCorrectlyPredictted(Tree* targetTree, Tree* computedTree) {
+    if (targetTree == nullptr || computedTree == nullptr) return 0;
+
+    long long leftSide = getTotalNumberOfInnerNodesCorrectlyPredictted(targetTree->getLeftTree(), computedTree->getLeftTree());
+    long long rightSide = getTotalNumberOfInnerNodesCorrectlyPredictted(targetTree->getRightTree(), computedTree->getRightTree());
+
+    if (targetTree->getRootRepresentation()[0] == 1 && computedTree->getScore()[0] > computedTree->getScore()[1]) return 1 + leftSide + rightSide;
+    if (targetTree->getRootRepresentation()[1] == 1 && computedTree->getScore()[0] < computedTree->getScore()[1]) return 1 + leftSide + rightSide;
+    return 0 + leftSide + rightSide;
 }

@@ -46,22 +46,12 @@ vector<Node> retrieveWordRepresentation(vector<string> words, Vocabulary *vocabu
 vector<double> createRandomDistributions(int d) {
     random_device rand;
     mt19937 generator(rand());
-    uniform_real_distribution<double> distribution(-0.1, 0.1);
+    uniform_real_distribution<double> distribution(-0.0001, 0.0001);
     vector<double> wordRep;
     for(int i = 0;i < d; i++) {
         double x = distribution(generator);
-        //while (isnan(x)) {
-         //   x = distribution(generator);
-         //   }
-        double aux = x;
+       // x = 0.001 * x;
         wordRep.push_back(x);
-    /*    if (aux < 0) aux = -(1) * aux;
-        while (aux < 1) {
-            x *= 10;
-            aux *= 10;
-    }*/
-
-     //   wordRep.push_back(x/10);
     }
     return wordRep;
 }

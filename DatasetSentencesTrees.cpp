@@ -6,6 +6,7 @@
 #include<string.h>
 
 #include "DatasetSentenceTrees.h"
+#include "Tree.h"
 
 using namespace std;
 

@@ -19,5 +19,6 @@ using namespace std;
         DatasetSentencesTrees();
         // Given an index retrieve the string containing the tree representation.
         string retrieveSentenceIndex(long long index);
+   //     unordered_map<long long, Tree> getTargetTrees();
  };
 

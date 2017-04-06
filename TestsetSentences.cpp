@@ -2,6 +2,7 @@
 #include <iostream>
 #include<fstream>
 #include<cstdio>
+#include<ctype.h>
 #include<string.h>
 using namespace std;
 
@@ -33,7 +34,10 @@ TestsetSentences::TestsetSentences() {
                 is_number = false;
 
             } else {
-                if (!is_number) word +=c;
+                if (!is_number) {
+                    char aux = tolower(c);
+                    word += aux;
+                    }
                 else number = number*10 + c -'0';
             }
          }

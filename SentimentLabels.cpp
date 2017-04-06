@@ -1,6 +1,7 @@
 #include "SentimentLabels.h"
 #include <iostream>
 #include <fstream>
+#include<ctype.h>
 #include <cstdio>
 #include <string.h>
 
@@ -30,7 +31,8 @@ SentimentLabels::SentimentLabels() {
                 } else {
                     if (!character) first_number = first_number*10 + c -'0';
                     else {
-                        word +=c;
+                        char aux = tolower(c);
+                        word +=aux;
                     }
                 }
             }
@@ -44,7 +46,7 @@ SentimentLabels::SentimentLabels() {
 double SentimentLabels::getSentimentScore(long long phraseIndex) {
     unordered_map<long long, double>::const_iterator found_iter = sentimentLabelsMap.find(phraseIndex);
     if (found_iter == sentimentLabelsMap.end()) {
-        cout<<"The given index: "<<phraseIndex<<"was not found as an index in the sentiment labels map."<<endl;
+        cout<<"The given index: "<<phraseIndex<<" was not found as an index in the sentiment labels map."<<endl;
         return -1;
         }
     return found_iter->second;

@@ -14,6 +14,7 @@ class Dictionary {
     public:
 
     Dictionary();
+    ~Dictionary();
 
     long long getPhraseIndex(string phrase);
 
